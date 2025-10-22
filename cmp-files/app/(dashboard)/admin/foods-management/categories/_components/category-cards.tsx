@@ -40,7 +40,7 @@ const CategoryCards = () => {
               onClick={() => {
                 alert({
                   onConfirm: () => {
-                    deleteCategoruQuery.mutate(item.id);
+                    deleteCategoryQuery.mutate(item.id);
                   },
                 });
               }}

@@ -1,4 +1,3 @@
-import { prisma } from "@/lib/db";
 import React, { ReactNode } from "react";
 import DashboardLayout from "./_components/dashbord-layout";
 
