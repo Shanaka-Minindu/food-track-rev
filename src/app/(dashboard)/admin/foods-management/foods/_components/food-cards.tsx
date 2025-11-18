@@ -1,22 +1,30 @@
-"use client"
+"use client";
 import React from "react";
-import { useFoodStore } from "../_libs/use-food-store";
+import { useFoodsStore } from "../_libs/use-food-store";
 import { useFoods } from "../_services/use-food-queries";
-import { useDeleteFood } from "../_services/use-food-mutation";
+import { useDeleteFood } from "../../foods/_services/use-food-mutation";
+
+
+
+
+
+//import { useDeleteFood } from "@/app/(dashboard)/admin/foods-management/foods/_services/use-food-mutations";
+
 import NoItemsFound from "@/components/noItemsFound";
 import FoodCardsSkeleton from "./food-cards-skeleton";
 import { Button } from "@/components/ui/button";
 import { Edit, Trash } from "lucide-react";
 import { Separator } from "@radix-ui/react-separator";
 import Pagination from "@/components/ui/pagination";
-
+import { alert } from "@/lib/useGlobleStore";
 const FoodCards = () => {
   const {
     updateSelectedFoodId,
     updateFoodDialogOpen,
     foodFilters,
-    updateFoodFilterPage,
-  } = useFoodStore();
+
+    updateFoodFiltersPage,
+  } = useFoodsStore();
 
   const foodsQuery = useFoods();
 
@@ -105,7 +113,7 @@ const FoodCards = () => {
       <Pagination
         currentPage={foodFilters.page}
         totalPages={totalPages}
-        updatePage={updateFoodFilterPage}
+        updatePage={updateFoodFiltersPage}
       />
     </div>
   );

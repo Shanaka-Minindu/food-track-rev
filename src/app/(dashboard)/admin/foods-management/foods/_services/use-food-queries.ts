@@ -1,11 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
-import { useFoodStore } from "../_libs/use-food-store"
+import { useFoodsStore } from "../_libs/use-food-store"
 import { getFood, getFoods } from "./foodQueries";
 
 
 
 const useFoods = () => {
-    const {foodFilters} = useFoodStore();
+    const {foodFilters} = useFoodsStore();
 
     return useQuery({
         queryKey:["foods", foodFilters],
@@ -14,7 +14,7 @@ const useFoods = () => {
 }
 
 const useFood = () =>{
-    const {selectedFoodId} = useFoodStore();
+    const {selectedFoodId} = useFoodsStore();
 
     return useQuery({
         queryKey : ["foods",{selectedFoodId}],

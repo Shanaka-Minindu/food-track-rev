@@ -1,6 +1,6 @@
 import { patterns } from "@/lib/constants";
 import { regexSchema, requiredStringSchema } from "@/lib/zodSchema";
-import z from "zod";
+import {z} from "zod";
 
 const foodSchema = z.intersection(
   z.object({
@@ -50,4 +50,4 @@ const servingUnitSchema = z.intersection(
   ])
 );
 
-export { foodSchema, type FoodSchema, foodDefaultValues, servingUnitSchema };
+export { foodSchema, servingUnitSchema, foodDefaultValues, type FoodSchema };

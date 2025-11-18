@@ -8,12 +8,11 @@ import { ControlledSelect } from "@/components/ui/controlled-select";
 import ServingUnitFormDialog from "../../serving-units/_components/servingUnitFormDialog";
 import ControlledInput from "@/components/ui/controlled-input";
 
-const SpecifyFoodServingUnit = () => {
+const SpecifyFoodServingUnits = () => {
   const { control } = useFormContext<FoodSchema>();
+  const foodServingUnits = useFieldArray({ control, name: "foodServingUnits" });
 
-  const foodServingUnit = useFieldArray({ control, name: "foodServingUnits" });
-
-  const servingUnitsQueys = useServingUnits();
+  const servingUnitsQuery = useServingUnits();
 
   return (
     <div className="flex flex-col gap-4 rounded-md border p-4">
@@ -25,15 +24,16 @@ const SpecifyFoodServingUnit = () => {
           variant="outline"
           className="flex items-center gap-1"
           onClick={() => {
-            foodServingUnit.append({ foodServingUnitId: "", grams: "0" });
+            foodServingUnits.append({ foodServingUnitId: "", grams: "0" });
           }}
         >
           <CirclePlus className="size-4" /> Add Serving Unit
         </Button>
       </div>
-      {foodServingUnit.fields.length === 0 ? (
+
+      {foodServingUnits.fields.length === 0 ? (
         <div className="text-muted-foreground flex flex-col items-center justify-center rounded-md border border-dashed py-6 text-center">
-          <UtensilsCrossed className="md-2 size-10 opacity-50" />
+          <UtensilsCrossed className="mb-2 size-10 opacity-50" />
           <p>No serving units added yet</p>
           <p className="text-sm">
             Add serving units to help users measure this food
@@ -41,27 +41,28 @@ const SpecifyFoodServingUnit = () => {
         </div>
       ) : (
         <div className="space-y-3">
-          {foodServingUnit.fields.map((field, index) => (
+          {foodServingUnits.fields.map((field, index) => (
             <div
-              key={field.id}
               className="grid grid-cols-[1fr_1fr_auto] items-end gap-3"
+              key={field.id}
             >
               <div className="col-span-1 flex items-end">
                 <ControlledSelect<FoodSchema>
-                  label="Food Serving Unit..."
-                  placeholder="Select unit..."
+                  label="Food Serving Unit"
                   name={`foodServingUnits.${index}.foodServingUnitId`}
-                  options={servingUnitsQueys.data?.map((item) => ({
+                  options={servingUnitsQuery.data?.map((item) => ({
                     label: item.name,
                     value: item.id,
                   }))}
+                  placeholder="Select unit..."
                 />
                 <ServingUnitFormDialog smallTrigger />
               </div>
+
               <div>
                 <ControlledInput<FoodSchema>
                   name={`foodServingUnits.${index}.grams`}
-                  label="Grams per unit"
+                  label="Grams per Unit"
                   type="number"
                   placeholder="0"
                 />
@@ -71,7 +72,7 @@ const SpecifyFoodServingUnit = () => {
                 variant="outline"
                 type="button"
                 onClick={() => {
-                  foodServingUnit.remove(index);
+                  foodServingUnits.remove(index);
                 }}
               >
                 <Trash2 />
@@ -84,4 +85,4 @@ const SpecifyFoodServingUnit = () => {
   );
 };
 
-export default SpecifyFoodServingUnit;
+export { SpecifyFoodServingUnits };

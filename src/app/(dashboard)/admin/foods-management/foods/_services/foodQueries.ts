@@ -1,6 +1,6 @@
 "use server"
 import { PaginatedResult } from "@/lib/types/paginatedResult";
-import { foodFilterSchema, FoodFilterSchema } from "../_types/foodFilterSchema";
+import { foodFiltersSchema, FoodFiltersSchema } from "../_types/foodFilterSchema";
 import { Prisma } from "@/generated/prisma";
 import { prisma } from "@/lib/db";
 import { FoodSchema } from "../_types/foodSchema";
@@ -13,9 +13,9 @@ type FoodsWithServingUnits = Prisma.FoodGetPayload<{
 }>;
 
 const getFoods = async (
-  filters: FoodFilterSchema
+  filters: FoodFiltersSchema
 ): Promise<PaginatedResult<FoodsWithServingUnits>> => {
-  const validatedFilters = foodFilterSchema.parse(filters);
+  const validatedFilters = foodFiltersSchema.parse(filters);
 
   const {
     searchTerm,
@@ -113,20 +113,21 @@ const getFood = async (id: number): Promise<FoodSchema | null> => {
   if (!res) return null;
 
   return {
-    action: "update",
+    action: "update" as const,
     id,
-    name: res.name,
+    name: toStringSafe(res.name),
     calories: toStringSafe(res.calories),
-    fat: toStringSafe(res.fat),
     carbohydrates: toStringSafe(res.carbohydrates),
+    fat: toStringSafe(res.fat),
     fiber: toStringSafe(res.fiber),
     protein: toStringSafe(res.protein),
     sugar: toStringSafe(res.sugar),
     categoryId: toStringSafe(res.categoryId),
-    foodServingUnit: res.foodServingUnit.map((item) => ({
-      foodServingId: toStringSafe(item.servingUnitId),
-      grams: toStringSafe(item.grams),
-    })),
+    foodServingUnits:
+      res.foodServingUnit.map((item) => ({
+        foodServingUnitId: toStringSafe(item.servingUnitId),
+        grams: toStringSafe(item.grams),
+      })) ?? [],
   };
 };
 

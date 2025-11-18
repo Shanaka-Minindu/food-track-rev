@@ -1,17 +1,31 @@
-"use client"
+"use client";
 import React, { useEffect, useMemo } from "react";
-import { FormProvider, SubmitHandler, useForm, useWatch } from "react-hook-form";
 import {
-  foodFilterDefaultValues,
-  foodFilterSchema,
-  FoodFilterSchema,
+  FormProvider,
+  SubmitHandler,
+  useForm,
+  useWatch,
+} from "react-hook-form";
+import {
+  foodFiltersDefaultValues,
+  foodFiltersSchema,
+  FoodFiltersSchema,
 } from "../_types/foodFilterSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useFoodStore } from "../_libs/use-food-store";
+import { useFoodsStore } from "../_libs/use-food-store";
 import equal from "fast-deep-equal";
 import { useDebounce } from "@/lib/use-debounce";
 import { useCategories } from "../../categories/_services/useCategoryQueries";
-import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
 import ControlledInput from "@/components/ui/controlled-input";
 import { Button } from "@/components/ui/button";
 import { FilterIcon } from "lucide-react";
@@ -19,21 +33,21 @@ import { ControlledSelect } from "@/components/ui/controlled-select";
 import { ControlledSlider } from "@/components/ui/controlled-slider";
 
 const FoodFiltersDrawer = () => {
-  const form = useForm<FoodFilterSchema>({
-    defaultValues: foodFilterDefaultValues,
-    resolver: zodResolver(foodFilterSchema),
+  const form = useForm<FoodFiltersSchema>({
+    defaultValues: foodFiltersDefaultValues,
+    resolver: zodResolver(foodFiltersSchema),
   });
 
   const {
-    foodFilterDrawerOpen,
+    foodFiltersDrawerOpen,
     foodFilters,
-    updateFoodFilterDrawerOpen,
+    updateFoodFiltersDrawerOpen,
     updateFoodFilters,
     updateFoodFiltersSearchTerm,
-  } = useFoodStore();
+  } = useFoodsStore();
 
   const areFiltersModified = useMemo(
-    () => !equal(foodFilters, foodFilterDefaultValues),
+    () => !equal(foodFilters, foodFiltersDefaultValues),
     [foodFilters]
   );
 
@@ -47,41 +61,49 @@ const FoodFiltersDrawer = () => {
   const categoryQuery = useCategories();
 
   useEffect(() => {
-    if (!foodFilterDrawerOpen) {
-      form.reset(foodFilterDefaultValues);
+    if (!foodFiltersDrawerOpen) {
+      form.reset(foodFiltersDefaultValues);
     }
-  }, [foodFilterDrawerOpen, foodFilters, form]);
+  }, [foodFiltersDrawerOpen, foodFilters, form]);
 
-  const onSubmit: SubmitHandler<FoodFilterSchema> = (data) => {
+  const onSubmit: SubmitHandler<FoodFiltersSchema> = (data) => {
     updateFoodFilters(data);
-    updateFoodFilterDrawerOpen(false);
+    updateFoodFiltersDrawerOpen(false);
   };
 
   return (
     <Drawer
-      open={foodFilterDrawerOpen}
-      onOpenChange={updateFoodFilterDrawerOpen}
+      open={foodFiltersDrawerOpen}
+      onOpenChange={updateFoodFiltersDrawerOpen}
       direction="right"
       handleOnly
     >
-        <FormProvider {...form}>
-            <div className="flex gap-2">
-                <ControlledInput name="searchTerm" containerClassName="max-w-48" placeholder="Quick Search"/>
-                <DrawerTrigger asChild>
-                    <Button variant="outline" badge={areFiltersModified}><FilterIcon/>Filters</Button>
-                </DrawerTrigger>
+      <FormProvider {...form}>
+        <div className="flex gap-2">
+          <ControlledInput
+            name="searchTerm"
+            containerClassName="max-w-48"
+            placeholder="Quick Search"
+          />
+          <DrawerTrigger asChild>
+            <Button variant="outline" badge={areFiltersModified}>
+              <FilterIcon />
+              Filters
+            </Button>
+          </DrawerTrigger>
+        </div>
+        <form>
+          <DrawerContent>
+            <DrawerHeader className="text-left">
+              <DrawerTitle>Filters</DrawerTitle>
+              <DrawerDescription>
+                Customize your Food with Search criteria{" "}
+              </DrawerDescription>
+            </DrawerHeader>
 
-            </div>
-            <form>
-                <DrawerContent>
-                    <DrawerHeader className="text-left">
-                        <DrawerTitle>Filters</DrawerTitle>
-                        <DrawerDescription>Customize your Food with Search criteria </DrawerDescription>
-                    </DrawerHeader>
-
-                <div className="space-y-2 p-4">
+            <div className="space-y-2 p-4">
               <div className="flex flex-wrap gap-2">
-                <ControlledSelect<FoodFilterSchema>
+                <ControlledSelect<FoodFiltersSchema>
                   label="Category"
                   name="categoryId"
                   clearable
@@ -91,7 +113,7 @@ const FoodFiltersDrawer = () => {
                   }))}
                 />
 
-                <ControlledSelect<FoodFilterSchema>
+                <ControlledSelect<FoodFiltersSchema>
                   label="Sort By"
                   name="sortBy"
                   options={[
@@ -103,7 +125,7 @@ const FoodFiltersDrawer = () => {
                   ]}
                 />
 
-                <ControlledSelect<FoodFilterSchema>
+                <ControlledSelect<FoodFiltersSchema>
                   label="Sort Order"
                   name="sortOrder"
                   options={[
@@ -114,13 +136,13 @@ const FoodFiltersDrawer = () => {
               </div>
 
               <div className="flex flex-wrap gap-2">
-                <ControlledSlider<FoodFilterSchema>
+                <ControlledSlider<FoodFiltersSchema>
                   name="caloriesRange"
                   label="Calories"
                   min={0}
                   max={9999}
                 />
-                <ControlledSlider<FoodFilterSchema>
+                <ControlledSlider<FoodFiltersSchema>
                   name="proteinRange"
                   label="Protein"
                   min={0}
@@ -136,7 +158,7 @@ const FoodFiltersDrawer = () => {
                 type="button"
                 variant="outline"
                 onClick={() => {
-                  form.reset(foodFilterDefaultValues);
+                  form.reset(foodFiltersDefaultValues);
                 }}
               >
                 Reset
@@ -147,7 +169,7 @@ const FoodFiltersDrawer = () => {
             </DrawerFooter>
           </DrawerContent>
         </form>
-        </FormProvider>
+      </FormProvider>
     </Drawer>
   );
 };

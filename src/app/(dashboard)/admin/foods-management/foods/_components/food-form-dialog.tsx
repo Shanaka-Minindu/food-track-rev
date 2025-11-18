@@ -10,7 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useFood } from "../_services/use-food-queries";
 import { useCategories } from "../../categories/_services/useCategoryQueries";
 import { useCreateFood, useUpdateFood } from "../_services/use-food-mutation";
-import { useFoodStore } from "../_libs/use-food-store";
+import { useFoodsStore } from "../_libs/use-food-store";
 import { useCategoryStore } from "../../categories/_lib/useCategoryStore";
 import { useServingUnitStore } from "../../serving-units/_lib/useServingStore";
 import {
@@ -26,7 +26,7 @@ import { Plus } from "lucide-react";
 import ControlledInput from "@/components/ui/controlled-input";
 import { ControlledSelect } from "@/components/ui/controlled-select";
 import CategoryFormDialog from "../../categories/_components/categoryFormDialog";
-import SpecifyFoodServingUnit from "./specify-food-serving-unit";
+import {SpecifyFoodServingUnits} from "./specify-food-serving-unit";
 
 const FoodFormDialog = () => {
   const form = useForm<FoodSchema>({
@@ -34,8 +34,10 @@ const FoodFormDialog = () => {
     resolver: zodResolver(foodSchema),
   });
 
+  
+
   const foodQuery = useFood();
-  const categoryQuery = useCategories();
+  const categoriesQuery = useCategories();
 
   const createFoodMutation = useCreateFood();
   const updateFoodMutation = useUpdateFood();
@@ -48,7 +50,7 @@ const FoodFormDialog = () => {
     updateSelectedFoodId,
     foodDialogOpen,
     updateFoodDialogOpen,
-  } = useFoodStore();
+  } = useFoodsStore();
 
   const { categoryDialogOpen } = useCategoryStore();
   const { ServingUnitDialogOpen } = useServingUnitStore();
@@ -57,27 +59,29 @@ const FoodFormDialog = () => {
     if (!!selectedFoodId && foodQuery.data) {
       form.reset(foodQuery.data);
     }
-  }, [foodQuery, form, selectedFoodId]);
+  }, [foodQuery.data, form, selectedFoodId]);
 
   const handleDialogOpenChange = (open: boolean) => {
     updateFoodDialogOpen(open);
 
     if (!open) {
-      updateFoodDialogOpen(false);
+      updateSelectedFoodId(null);
       form.reset(foodDefaultValues);
     }
   };
 
   const handleSuccess = () => {
-    updateFoodDialogOpen(false);
+    handleDialogOpenChange(false);
   };
 
-  const disableSubmit = categoryDialogOpen || ServingUnitDialogOpen;
+  const disabledSubmit = ServingUnitDialogOpen || categoryDialogOpen;
 
   const onSubmit: SubmitHandler<FoodSchema> = (data) => {
-    console.log(data)
+    console.log("hii", data)
     if (data.action === "create") {
-      createFoodMutation.mutate(data, { onSuccess: handleSuccess });
+      createFoodMutation.mutate(data, {
+        onSuccess: handleSuccess,
+      });
     } else {
       updateFoodMutation.mutate(data, { onSuccess: handleSuccess });
     }
@@ -98,7 +102,7 @@ const FoodFormDialog = () => {
           </DialogTitle>
         </DialogHeader>
         <form
-          onSubmit={disableSubmit ? undefined : form.handleSubmit(onSubmit)}
+          onSubmit={disabledSubmit ? undefined : form.handleSubmit(onSubmit)}
           className="space-y-6"
         >
           <FormProvider {...form}>
@@ -107,20 +111,22 @@ const FoodFormDialog = () => {
                 <ControlledInput<FoodSchema>
                   name="name"
                   label="Name"
-                  placeholder="Enter the Food Name"
+                  placeholder="Enter food name"
                 />
               </div>
+
               <div className="col-span-1 flex items-end">
                 <ControlledSelect<FoodSchema>
                   label="Category"
                   name="categoryId"
-                  options={categoryQuery.data?.map((item) => ({
+                  options={categoriesQuery.data?.map((item) => ({
                     label: item.name,
                     value: item.id,
                   }))}
                 />
                 <CategoryFormDialog smallTrigger />
               </div>
+
               <div>
                 <ControlledInput<FoodSchema>
                   name="calories"
@@ -170,7 +176,7 @@ const FoodFormDialog = () => {
                 />
               </div>
               <div className="col-span-2">
-                <SpecifyFoodServingUnit />
+                <SpecifyFoodServingUnits />
               </div>
             </div>
           </FormProvider>
@@ -185,4 +191,4 @@ const FoodFormDialog = () => {
   );
 };
 
-export default FoodFormDialog;
+export { FoodFormDialog };

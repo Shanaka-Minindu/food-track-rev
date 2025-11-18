@@ -1,7 +1,8 @@
 import React from 'react'
-import FoodFormDialog from './_components/food-form-dialog'
+
 import FoodFiltersDrawer from './_components/food-filters-drawer'
 import FoodCards from './_components/food-cards'
+import { FoodFormDialog } from './_components/food-form-dialog'
 
 const page = () => {
   return (

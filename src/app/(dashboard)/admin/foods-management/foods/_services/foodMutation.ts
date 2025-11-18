@@ -1,3 +1,4 @@
+"use server"
 import { executeAction } from "@/lib/executeAction";
 import { foodSchema, FoodSchema } from "../_types/foodSchema";
 import { prisma } from "@/lib/db";
@@ -22,11 +23,11 @@ const createFood = async (data: FoodSchema) => {
       });
 
       await Promise.all(
-        validatedData.foodServingUnit.map(async (unit) => {
+        validatedData.foodServingUnits.map(async (unit) => {
           await prisma.foodServingUnit.create({
             data: {
               foodId: food.id,
-              servingUnitId: toNumberSafe(unit.foodServingId),
+              servingUnitId: toNumberSafe(unit.foodServingUnitId),
               grams: toNumberSafe(unit.grams),
             },
           });
@@ -59,16 +60,16 @@ const updateFood = async (data: FoodSchema) => {
 
         await prisma.foodServingUnit.deleteMany({
           where: {
-            id: validatedData.id,
+            foodId: validatedData.id,
           },
         });
 
         await Promise.all(
-          validatedData.foodServingUnit.map(async (unit) => {
+          validatedData.foodServingUnits.map(async (unit) => {
             await prisma.foodServingUnit.create({
               data: {
                 foodId: validatedData.id,
-                servingUnitId: toNumberSafe(unit.foodServingId),
+                servingUnitId: toNumberSafe(unit.foodServingUnitId),
                 grams: toNumberSafe(unit.grams),
               },
             });

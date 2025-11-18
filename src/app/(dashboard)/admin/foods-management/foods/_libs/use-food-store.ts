@@ -1,30 +1,30 @@
 import { createStore } from "@/lib/createStore";
 import {
-  foodFilterDefaultValues,
-  FoodFilterSchema,
+  foodFiltersDefaultValues,
+  FoodFiltersSchema,
 } from "../_types/foodFilterSchema";
 
 type State = {
   selectedFoodId: number | null;
   foodDialogOpen: boolean;
-  foodFilters: FoodFilterSchema;
-  foodFilterDrawerOpen: boolean;
+  foodFilters: FoodFiltersSchema;
+  foodFiltersDrawerOpen: boolean;
 };
 
-type Action = {
+type Actions = {
   updateSelectedFoodId: (id: State["selectedFoodId"]) => void;
   updateFoodDialogOpen: (is: State["foodDialogOpen"]) => void;
   updateFoodFilters: (filters: State["foodFilters"]) => void;
-  updateFoodFilterDrawerOpen: (is: State["foodFilterDrawerOpen"]) => void;
-  updateFoodFilterPage: (action: "next" | "prev" | number) => void;
+  updateFoodFiltersDrawerOpen: (is: State["foodFiltersDrawerOpen"]) => void;
+  updateFoodFiltersPage: (action: "next" | "prev" | number) => void;
   updateFoodFiltersSearchTerm: (
-    str: State["foodFilters"]["searchTerm"]
+    str: State["foodFilters"]["searchTerm"],
   ) => void;
 };
 
-type Store = State & Action;
+type Store = State & Actions;
 
-const useFoodStore = createStore<Store>(
+const useFoodsStore = createStore<Store>(
   (set) => ({
     selectedFoodId: null,
     updateSelectedFoodId: (id) =>
@@ -36,17 +36,17 @@ const useFoodStore = createStore<Store>(
       set((state) => {
         state.foodDialogOpen = is;
       }),
-    foodFilters: foodFilterDefaultValues,
+    foodFilters: foodFiltersDefaultValues,
     updateFoodFilters: (filters) =>
       set((state) => {
         state.foodFilters = filters;
       }),
-    foodFilterDrawerOpen: false,
-    updateFoodFilterDrawerOpen: (is) =>
+    foodFiltersDrawerOpen: false,
+    updateFoodFiltersDrawerOpen: (is) =>
       set((state) => {
-        state.foodFilterDrawerOpen = is;
+        state.foodFiltersDrawerOpen = is;
       }),
-    updateFoodFilterPage: (action) =>
+    updateFoodFiltersPage: (action) =>
       set((state) => {
         const currentPage = state.foodFilters.page;
         let newPage = currentPage;
@@ -74,7 +74,7 @@ const useFoodStore = createStore<Store>(
   {
     name: "foods-store",
     excludeFormPersist: ["foodFilters"],
-  }
+  },
 );
 
-export { useFoodStore };
+export { useFoodsStore };
