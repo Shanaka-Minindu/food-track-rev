@@ -1,3 +1,4 @@
+"use server"
 import { executeAction } from "@/lib/executeAction";
 import { signInSchema, SignInSchema } from "../_types/signInSchema";
 import { signIn as authSignIn , signOut as authSignOut } from "@/lib/auth";

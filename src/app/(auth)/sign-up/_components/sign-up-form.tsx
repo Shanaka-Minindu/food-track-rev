@@ -22,6 +22,7 @@ const SignUpForm = () => {
   const signUpMutation = useSignUp();
 
   const onSubmit: SubmitHandler<SignUpSchema> = (data) => {
+    console.log(data)
     signUpMutation.mutate(data);
   };
   return (

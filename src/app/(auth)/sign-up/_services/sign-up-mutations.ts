@@ -1,4 +1,4 @@
-
+"use server"
 import { executeAction } from "@/lib/executeAction"
 import { signUpSchema, SignUpSchema } from "../_types/signUpSchema"
 import { hashedPassword } from "@/lib/utils"
