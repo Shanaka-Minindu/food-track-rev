@@ -28,11 +28,16 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ModeToggle } from "@/components/themeToggle";
 import z from "zod";
 import { customErrorMap } from "@/lib/customErrorMap";
+import { Session } from "next-auth";
+import { useSignOut } from "@/app/(auth)/sign-in/_services/use-sign-in-mutation";
+
+import { Role } from "@/generated/prisma";
 
 z.setErrorMap(customErrorMap);
 
 type DashboardLayoutProp = {
   children: ReactNode;
+  session: Session;
 };
 
 type RouteGroupType = {
@@ -129,8 +134,22 @@ const RouteGroup = ({ group, items }: RouteGroupType) => {
   );
 };
 
-const DashboardLayout = ({ children }: DashboardLayoutProp) => {
+const DashboardLayout = ({ children, session }: DashboardLayoutProp) => {
   const [open, setOpen] = useState(false);
+
+
+  const signOutMutation = useSignOut();
+  const userRole = session?.user?.role;
+
+  const filteredRouteGroups = ROUTE_GROUPS.filter((group) => {
+    if (userRole === Role.ADMIN) {
+      return group.group === "Foods Management";
+    } else if (userRole === Role.USER) {
+      return group.group === "Meal Management";
+    }
+    return false;
+  });
+
   return (
     <div className="flex">
       <div className="bg-background fixed z-10 flex h-13 w-screen items-center justify-between border px-2">
@@ -143,16 +162,16 @@ const DashboardLayout = ({ children }: DashboardLayoutProp) => {
         </Collapsible.Root>
         <div className="flex">
           <ModeToggle />
-          <DropdownMenu>
+          {session && (<DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
                 className="flex h-9 items-center gap-2 px-2"
               >
                 <Avatar className="size-8">
-                  <AvatarFallback>A</AvatarFallback>
+                  <AvatarFallback>{session.user?.name?.[0]}</AvatarFallback>
                 </Avatar>
-                <span className="hidden md:inline"> Admin</span>
+                <span className="hidden md:inline"> {session.user.name}</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
@@ -160,21 +179,22 @@ const DashboardLayout = ({ children }: DashboardLayoutProp) => {
               <DropdownMenuSeparator />
               <div className="flex items-center gap-3 px-2 py-1.5">
                 <Avatar className="size-10">
-                  <AvatarFallback>A</AvatarFallback>
+                  <AvatarFallback>{session.user?.name?.[0]}</AvatarFallback>
                 </Avatar>
                 <div>
                   <p className="text-sm font-medium">Admin</p>
                   <p className="text-muted-foreground text-xs">
-                    admin@test.com
+                    {session.user.email}
                   </p>
                 </div>
               </div>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => {}} variant="destructive">
+              <DropdownMenuItem onClick={() => {signOutMutation.mutate()}} variant="destructive">
                 <LogOut className="size-4" /> LogOut
               </DropdownMenuItem>
             </DropdownMenuContent>
-          </DropdownMenu>
+          </DropdownMenu>)}
+          
         </div>
       </div>
 
@@ -199,7 +219,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProp) => {
             </div>
             <Separator className="my-2" />
             <div className="mt-4">
-              {ROUTE_GROUPS.map((route) => (
+              {filteredRouteGroups.map((route) => (
                 <RouteGroup
                   key={route.group}
                   group={route.group}

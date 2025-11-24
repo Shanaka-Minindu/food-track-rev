@@ -3,6 +3,7 @@ import NextAuth from "next-auth";
 import { prisma } from "./db";
 import { comparePassword, toStringSafe } from "./utils";
 import Credentials from "next-auth/providers/credentials";
+import { Role } from "@/generated/prisma";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
@@ -40,7 +41,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           id: toStringSafe(user.id),
           email: user.email,
           name: user.name,
-          role: user.role,
+          role: user.role as Role,
         };
       },
     }),
@@ -48,25 +49,25 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   pages: {
     signIn: "/sign-in",
   },
+  // In your auth.ts file
   callbacks: {
     jwt({ token, user }) {
-      const clonedToken = token;
-
       if (user) {
-        clonedToken.id = toStringSafe(user.id);
-        clonedToken.name = user.name;
-        clonedToken.role = user.role;
+        token.id = toStringSafe(user.id);
+        token.name = user.name;
+        token.role = user.role as Role;
       }
-      return clonedToken;
+
+      return token;
     },
     session({ session, token }) {
-      const clonedSession = session;
-      if (clonedSession.user) {
-        clonedSession.user.id = toStringSafe(token.id);
-        clonedSession.user.name = token.name;
-        clonedSession.user.role = token.role;
+      if (session.user) {
+        session.user.id = toStringSafe(token.id);
+        session.user.name = token.name;
+        session.user.role = token.role as Role; // Add type assertion
       }
-      return clonedSession;
+
+      return session;
     },
   },
 });

@@ -94,6 +94,7 @@ model MealFood {
   foodId        Int
   meal          Meal        @relation(fields: [mealId], references: [id])
   mealId        Int
+  amount    Float
   servingUnit   ServingUnit @relation(fields: [servingUnitId], references: [id])
   servingUnitId Int
   createdAt DateTime   @default(now())
