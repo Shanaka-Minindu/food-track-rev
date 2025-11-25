@@ -6,6 +6,7 @@ import { prisma } from "@/lib/db";
 import { toNumberSafe } from "@/lib/utils";
 
 const createMeal = async (data: MealSchema) => {
+  console.log(data)
   await executeAction({
     actionFn: async () => {
       const validatedData = mealSchema.parse(data);
@@ -13,7 +14,7 @@ const createMeal = async (data: MealSchema) => {
       const meal = await prisma.meal.create({
         data: {
           userId: toNumberSafe(validatedData.userId),
-          dateTime: validatedData.dataTime,
+          dateTime: validatedData.dateTime,
         },
       });
 
@@ -41,7 +42,7 @@ const updateMeal = async (data: MealSchema) => {
         await prisma.meal.update({
           where: { id: validatedData.id },
           data: {
-            dateTime: validatedData.dataTime,
+            dateTime: validatedData.dateTime,
           },
         });
         await prisma.mealFood.deleteMany({
@@ -75,4 +76,4 @@ const deleteMeal = async (id: number) => {
   });
 };
 
-export {createMeal, deleteMeal,updateMeal}
+export { createMeal, deleteMeal, updateMeal };

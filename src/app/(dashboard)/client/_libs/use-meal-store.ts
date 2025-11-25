@@ -1,6 +1,9 @@
 import { createStore } from "@/lib/createStore";
-import { mealDefaultValues, MealSchema } from "../_types/mealSchema";
-import { mealFiltersDefaultValues, MealFiltersSchema } from "../_types/mealFilterSchema";
+
+import {
+  mealFiltersDefaultValues,
+  MealFiltersSchema,
+} from "../_types/mealFilterSchema";
 
 type State = {
   selectedMealId: number | null;

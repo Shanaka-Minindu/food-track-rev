@@ -6,7 +6,7 @@ import z from "zod";
 const mealSchema = z.intersection(
     z.object({
         userId: requiredStringSchema,
-        dataTime : z.date(),
+        dateTime : z.date(),
         mealFoods: z.array(
             z.object({
                 foodId: requiredStringSchema,
@@ -25,7 +25,7 @@ type MealSchema = z.infer<typeof mealSchema>;
 
 const mealDefaultValues: MealSchema = {
     action : "create",
-    dataTime : new Date(),
+    dateTime : new Date(),
     mealFoods:[],
     userId: ""
 }

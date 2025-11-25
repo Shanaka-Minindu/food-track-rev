@@ -18,15 +18,13 @@ const getMeals = async (filters: MealFiltersSchema) => {
   const { dateTime } = validatedFilters || {};
 
   const where: Prisma.MealWhereInput = {};
-  
 
   if (dateTime !== undefined) {
     const startDate = new Date(dateTime);
     startDate.setHours(0, 0, 0, 0);
 
     const endDate = new Date(dateTime);
-    endDate.setHours(23,59,59,999)
-
+    endDate.setHours(23, 59, 59, 999);
     where.dateTime = {
       gte: startDate,
       lte: endDate,
@@ -55,27 +53,27 @@ const getMeals = async (filters: MealFiltersSchema) => {
   return date;
 };
 
-const getMeal = async(id:number):Promise<MealSchema| null>=>{
+const getMeal = async (id: number): Promise<MealSchema | null> => {
+  const res = await prisma.meal.findFirst({
+    where: { id },
+    include: {
+      mealFood: true,
+    },
+  });
+  if (!res) return null;
 
-    const res = await prisma.meal.findFirst({
-        where:{id},
-        include:{
-            mealFood:true
-        }
-    })
-    if(!res) return null;
+  return {
+    action: "update",
+    id,
+    dateTime: res.dateTime,
+    userId: toStringSafe(res.userId),
+    mealFoods:
+      res.mealFood.map((item) => ({
+        foodId: toStringSafe(item.foodId),
+        amount: toStringSafe(item.amount),
+        servingUnitId: toStringSafe(item.servingUnitId),
+      })) ?? [],
+  };
+};
 
-    return{
-        action:"update",
-        id,
-        dataTime: res.dateTime,
-        userId: toStringSafe(res.userId),
-        mealFoods: res.mealFood.map((item)=>({
-            foodId: toStringSafe(item.foodId),
-            amount: toStringSafe(item.amount),
-            servingUnitId: toStringSafe(item.servingUnitId)
-        }))?? [],
-    }
-}
-
-export { getMeal, getMeals}
+export { getMeal, getMeals };
